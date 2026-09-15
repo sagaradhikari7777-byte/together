@@ -28,6 +28,12 @@ Validated in Chromium at 320, 375, and 440 pixel phone widths: Sheets navigation
 
 Dialogs now explicitly fill the phone width, avoiding Safari’s default dialog maximum width. Form grid tracks and controls can shrink without horizontal overflow; date controls use a consistent height and left alignment. Very narrow phones stack paired fields. Dialog headings stay visible while scrolling, and onboarding headings receive initial focus without opening the keyboard.
 
+## GitHub publishing
+
+Source repository: https://github.com/sagaradhikari7777-byte/together.
+
+Connect the existing Netlify project to this repository with production branch `main`, build command `npm run build`, and publish directory `dist`. Functions are configured in `netlify.toml`. Once the repository connection is enabled, pushes to `main` trigger production builds. Confirm the matching commit is published in Netlify before considering an update live. Keep credentials in Netlify, never in this repository.
+
 ## Deploy
 
 The Netlify project is `sagar-together` (site ID `44e9826a-d6c3-4e89-949e-7cf869eb4527`). Build with `npm run build`. Deploy the complete project, including `netlify/functions` and the SQL migrations under `netlify/database/migrations`; uploading only `dist` omits the backend. The production site is public; preview deployments retain Netlify sign-in protection.
