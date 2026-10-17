@@ -4,19 +4,15 @@ An original, iPhone-first household expense app inspired by the supplied feature
 
 ## Status
 
-Published at https://sagar-together.netlify.app with its Netlify Function and managed Netlify Database. All 18 automated tests pass. Live checks passed for household creation, joining, expense saving, cross-member reads, stale-revision rejection, private-record isolation, and invalid-key rejection. The database migration is applied. iPhone Safari layout, receipt picking, Home Screen launch, and file sharing still need device validation.
+Published at https://sagar-together.vercel.app on Vercel, with its serverless API and Upstash Redis (Vercel KV) storage. All automated tests pass, and Vercel runs them before every build. iPhone Safari layout, receipt picking, Home Screen launch, and file sharing still need device validation.
 
 ## Pearl UI redesign
-
-Published at https://sagar-together.netlify.app. Production deployment: 6aa7e843490a2e6ed56f22c9.
 
 The UI now uses a coordinated pearl-and-sage theme, including a redesigned Home spending summary, settlement shortcut, equal-sized couple cards and quick-add tiles, updated forms, sheet lists, and matching light/dark appearances. The floating navigation is one five-column glass capsule: Home, Sheets, Add, Settle, Settings. All buttons share their height, width, icon position and label baseline. Icons and Home Screen colours match the new theme. Financial data, shared storage, catalog management and privacy rules remain unchanged.
 
 Chromium checks passed at 320, 375, 440 and 900 pixel widths: no horizontal overflow, equal navigation button dimensions and icon alignment, working navigation to all tabs, the add-expense form, onboarding and light/dark mode. Screenshots were visually reviewed and dark-mode contrast refined. Actual iPhone Safari verification remains outstanding.
 
 ## Sheets and choice lists update
-
-Published to https://sagar-together.netlify.app. Deployment: 6aa79c73c2d4c6ac87354a77.
 
 The main navigation is Home, Sheets, Settle, and Settings. Sheets opens a searchable list with totals, dates, and visible expense counts. Swipe right for edit/pin and left for archive/delete; the actions menu provides the same controls without a gesture. Sheet deletion requires every record to be eligible for deletion by the member and preserves settlement locks. Archive and reopen retain the original settlement requirements.
 
@@ -32,21 +28,21 @@ Dialogs now explicitly fill the phone width, avoiding Safari’s default dialog 
 
 Source repository: https://github.com/sagaradhikari7777-byte/together.
 
-Connect the existing Netlify project to this repository with production branch `main`, build command `npm run build`, and publish directory `dist`. Functions are configured in `netlify.toml`. Once the repository connection is enabled, pushes to `main` trigger production builds. Confirm the matching commit is published in Netlify before considering an update live. Keep credentials in Netlify, never in this repository.
+The Vercel project `sagar-together` deploys from this repository. Pushes to `main` trigger production builds; other branches receive preview deployments. Confirm the matching commit is published in Vercel before considering an update live. Keep credentials in Vercel, never in this repository.
 
 ## Deploy
 
-The Netlify project is `sagar-together` (site ID `44e9826a-d6c3-4e89-949e-7cf869eb4527`). Build with `npm run build`. Deploy the complete project, including `netlify/functions` and the SQL migrations under `netlify/database/migrations`; uploading only `dist` omits the backend. The production site is public; preview deployments retain Netlify sign-in protection.
+`vercel.json` sets the build command to `npm test && npm run build` (a failing test stops the deployment) and the output directory to `dist`. `api/household.js` is deployed automatically as a Vercel Function at `/api/household`.
 
-Netlify manages the production database connection. The `together_state` table stores household documents and short-lived rate-limit entries. Updates compare the entire expected document atomically in Postgres, preserving the API's conflict detection. Private access links and all visibility rules remain enforced on the server. Existing Upstash credentials are still supported as an optional alternative for previously configured installations.
+Connect an Upstash Redis database to the project (Vercel Marketplace → Upstash, or Storage). The function reads `KV_REST_API_URL` and `KV_REST_API_TOKEN`, or `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. Without them the app reports that shared storage is not connected. Each household is one versioned JSON document; updates use an atomic compare-and-set script, preserving the API's conflict detection. Private access links and all visibility rules remain enforced on the server.
 
-For this deployment, the CLI uploaded the migration as a generated build artifact under `.netlify/internal/db/migrations`, and Netlify confirmed it was applied. Future schema changes should use new, sequential migrations. Do not edit already-applied migrations.
+To check a deployment end to end, run `node scripts/check-live.mjs <site URL>`. It creates a temporary household; set the KV variables locally to have it deleted afterwards.
 
 Open the live site, create your household, save your private access link, and share the separate invitation with your household members. On iPhone, open it in Safari and use Share → Add to Home Screen.
 
 ## Development
 
-Use Node.js 22.12+ and install dependencies with `npm install`. Run `npm test` and `npm run build`. Use `netlify dev` for the Netlify backend and database environment. The original standalone development server uses the optional Redis backend. Sample mode remains temporary and does not save shared data.
+Use Node.js 22. There are no runtime dependencies. Run `npm test` and `npm run build`. `npm run dev` starts a local server at http://localhost:3000 using the Redis credentials in `.env` (see `.env.example`). Sample mode remains temporary and does not save shared data.
 
 ## Access and privacy
 
@@ -71,10 +67,7 @@ This initial small-household implementation keeps one versioned JSON document pe
 - `lib/model.js`: validation, member visibility, splits, sheets, settlement rules.
 - `api/household.js`: authenticated Vercel endpoint, rate limit and atomic persistence.
 - `tests/household.test.mjs`: financial, privacy, access, concurrency-revision and API checks using a deterministic fake Redis service.
-- `scripts/`: dependency-free build and local development server.
-- `netlify.toml` and `netlify/functions/household.mjs`: Netlify build configuration and native function adapter.
-- `lib/netlify-storage.js`: managed Postgres storage adapter.
-- `netlify/database/migrations/`: database schema migrations.
-- `vercel.json`: optional original deployment settings.
+- `scripts/`: dependency-free build, local development server and live deployment check.
+- `vercel.json`: Vercel build settings and security headers.
 
 No Grok source files, credentials, personal transaction data, or dependencies are copied into this app.

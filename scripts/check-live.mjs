@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import {getDatabase} from '@netlify/database';
 const base = process.argv[2];
 if (!base) throw new Error('Supply the Together site URL');
 const request = async (body, key='') => {
@@ -22,13 +21,14 @@ try {
  console.log('PASS: create, join, save, cross-member read, stale-write rejection, private-record isolation, invalid-key rejection');
 } finally {
  if(house){
-  const connectionString=process.env.TEST_DATABASE_URL;
-  if(connectionString){
-   const db=getDatabase({connectionString});
+  const url=process.env.KV_REST_API_URL||process.env.UPSTASH_REDIS_REST_URL;
+  const token=process.env.KV_REST_API_TOKEN||process.env.UPSTASH_REDIS_REST_TOKEN;
+  if(url&&token){
    try {
-    await db.sql`DELETE FROM together_state WHERE key = ${'together:house:'+house}`;
+    const r=await fetch(url,{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify(['DEL','together:house:'+house])});
+    if(!r.ok||(await r.json()).error)throw new Error();
     console.log('Temporary test household removed.');
    } catch { console.log('Test household retained: cleanup credentials lack delete access.'); }
-  } else console.log('Test household retained; set TEST_DATABASE_URL to enable cleanup.');
+  } else console.log('Test household retained; set KV_REST_API_URL and KV_REST_API_TOKEN to enable cleanup.');
  }
 }
