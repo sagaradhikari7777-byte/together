@@ -1,4 +1,4 @@
-import household, { makeHandler } from '../../api/household.js';
+import { makeHandler } from '../../lib/handler.js';
 import { storage } from '../../lib/netlify-storage.js';
 
 export const config = { path: '/api/household' };
@@ -41,8 +41,4 @@ export function adapt(handler) {
   };
 }
 
-export default adapt((req, res) => {
-  const hasRedis = (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL)
-    && (process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN);
-  return (hasRedis ? household : makeHandler(storage))(req, res);
-});
+export default adapt(makeHandler(storage));
