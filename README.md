@@ -4,7 +4,7 @@ An original, iPhone-first household expense app inspired by the supplied feature
 
 ## Status
 
-Published at https://sagar-together.netlify.app with its Netlify Function and managed Netlify Database. All 18 automated tests pass. Live checks passed for household creation, joining, expense saving, cross-member reads, stale-revision rejection, private-record isolation, and invalid-key rejection. The database migration is applied. iPhone Safari layout, receipt picking, Home Screen launch, and file sharing still need device validation.
+Published at https://sagar-together.netlify.app with its Netlify Function and managed Netlify Database. All automated tests pass. Live checks passed for household creation, joining, expense saving, cross-member reads, stale-revision rejection, private-record isolation, and invalid-key rejection. The database migration is applied. iPhone Safari layout, receipt picking, Home Screen launch, and file sharing still need device validation.
 
 ## Pearl UI redesign
 
@@ -52,11 +52,11 @@ Use Node.js 22.12+ and install dependencies with `npm install`. Run `npm test` a
 
 - Four member slots, grouped as members 1–2 and 3–4. Display names are editable.
 - Each member receives a random 256-bit private access key. Only its SHA-256 hash is stored with household data. The device remembers the key to stay signed in. Access links use a URL fragment that is removed from the address bar after opening.
-- Private links act as sign-in credentials. Save yours securely. This version does not have email/password recovery or a member-key revocation interface. A lost key needs an owner-assisted database reset for that slot.
+- Private links act as sign-in credentials. Save yours securely. In Settings, a member can replace their own link or their partner's; the old link stops working immediately and the new one is shown once to pass on privately. The seat stays claimed, so the invitation cannot take it over. The other couple cannot replace your link, because that would expose your couple's private expenses. If both partners in a couple lose their links, the slot needs an owner-assisted database reset. There is no email/password recovery.
 - The invitation allows its holder to claim an unclaimed member slot; it is not identity verification. Share only within the household. Replacing an invitation invalidates the old invitation, not already-issued member access.
 - Server responses exclude the other couple’s private expenses and receipts. Private expenses must be paid by a member of the current couple. Only the author or payer can edit/delete an eligible expense.
 - Couple-private entries are excluded from settlement. Shared entries allocate either 50/50 or 100% to one couple. For odd-cent equal splits, couple two receives the extra cent; every cent is accounted for.
-- Recording settlement marks the selected sheet’s unsettled shared expenses as settled and locks them. It does not initiate a bank transfer. There is no settlement reversal interface.
+- Recording settlement marks the selected sheet’s unsettled shared expenses as settled and locks them. It does not initiate a bank transfer. Any member can undo the most recent settlement on an open sheet (reopen an archived sheet first); its expenses unlock and the record stays in history marked as undone.
 - Writes use an atomic compare-and-set operation to prevent silent overwrites. When another member saves first, the app refreshes and asks the current member to review and save again.
 - The app refreshes visible household data every 30 seconds and when returning to the foreground. An open form is protected from background replacement. It requires connectivity and does not promise offline or iOS background sync.
 - CSV export contains only the current member’s visible records and excludes receipt images. Formula-leading text is escaped.
