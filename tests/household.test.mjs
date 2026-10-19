@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createHouse,mutate,visible,balance,identity,digest} from '../lib/model.js';
-import {makeHandler} from '../api/household.js';
+import {makeHandler} from '../lib/handler.js';
 const setup=()=>createHouse({name:'Our home',names:['Sagar','Sushma','Nabin','Sujata'],seat:0});
 const exp=(h,patch={})=>({merchant:'Groceries',cents:10001,category:'Groceries',payer:0,visibility:'shared',split:'half',date:'2026-09-13',sheet:h.sheets[0].id,notes:'',...patch});
 test('equal splits conserve every cent, including odd totals',()=>{const{h}=setup();mutate(h,0,{action:'expense',expense:exp(h)});assert.deepEqual(balance(h.expenses),{net:5001,aPaid:10001,bPaid:0,amount:5001});mutate(h,2,{action:'expense',expense:exp(h,{payer:2})});assert.equal(balance(h.expenses).net,1);});

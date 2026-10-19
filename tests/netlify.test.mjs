@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { adapt, config } from '../netlify/functions/household.mjs';
-import { makeHandler } from '../api/household.js';
+import { makeHandler } from '../lib/handler.js';
 
 test('Netlify maps request, auth, trusted IP and response at the existing API route', async () => {
   const handler = adapt(async (req, res) => {

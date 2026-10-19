@@ -38,7 +38,7 @@ Connect the existing Netlify project to this repository with production branch `
 
 The Netlify project is `sagar-together` (site ID `44e9826a-d6c3-4e89-949e-7cf869eb4527`). Build with `npm run build`. Deploy the complete project, including `netlify/functions` and the SQL migrations under `netlify/database/migrations`; uploading only `dist` omits the backend. The production site is public; preview deployments retain Netlify sign-in protection.
 
-Netlify manages the production database connection. The `together_state` table stores household documents and short-lived rate-limit entries. Updates compare the entire expected document atomically in Postgres, preserving the API's conflict detection. Private access links and all visibility rules remain enforced on the server. Existing Upstash credentials are still supported as an optional alternative for previously configured installations.
+Netlify manages the production database connection. The `together_state` table stores household documents and short-lived rate-limit entries. Updates compare the entire expected document atomically in Postgres, preserving the API's conflict detection. Private access links and all visibility rules remain enforced on the server.
 
 For this deployment, the CLI uploaded the migration as a generated build artifact under `.netlify/internal/db/migrations`, and Netlify confirmed it was applied. Future schema changes should use new, sequential migrations. Do not edit already-applied migrations.
 
@@ -46,7 +46,7 @@ Open the live site, create your household, save your private access link, and sh
 
 ## Development
 
-Use Node.js 22.12+ and install dependencies with `npm install`. Run `npm test` and `npm run build`. Use `netlify dev` for the Netlify backend and database environment. The original standalone development server uses the optional Redis backend. Sample mode remains temporary and does not save shared data.
+Use Node.js 22.12+ and install dependencies with `npm install`. Run `npm test` and `npm run build`. Use `netlify dev` for the Netlify backend and database environment. Sample mode remains temporary and does not save shared data.
 
 ## Access and privacy
 
@@ -69,12 +69,11 @@ This initial small-household implementation keeps one versioned JSON document pe
 
 - `public/`: independent interface, styles, icons, manifest.
 - `lib/model.js`: validation, member visibility, splits, sheets, settlement rules.
-- `api/household.js`: authenticated Vercel endpoint, rate limit and atomic persistence.
-- `tests/household.test.mjs`: financial, privacy, access, concurrency-revision and API checks using a deterministic fake Redis service.
-- `scripts/`: dependency-free build and local development server.
+- `lib/handler.js`: authenticated household API, rate limit and atomic persistence.
+- `tests/household.test.mjs`: financial, privacy, access, concurrency-revision and API checks using a deterministic fake storage service.
+- `scripts/`: dependency-free build and live-site check.
 - `netlify.toml` and `netlify/functions/household.mjs`: Netlify build configuration and native function adapter.
 - `lib/netlify-storage.js`: managed Postgres storage adapter.
 - `netlify/database/migrations/`: database schema migrations.
-- `vercel.json`: optional original deployment settings.
 
 No Grok source files, credentials, personal transaction data, or dependencies are copied into this app.
