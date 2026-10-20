@@ -24,6 +24,12 @@ Validated in Chromium at 320, 375, and 440 pixel phone widths: Sheets navigation
 
 Dialogs now explicitly fill the phone width, avoiding Safari’s default dialog maximum width. Form grid tracks and controls can shrink without horizontal overflow; date controls use a consistent height and left alignment. Very narrow phones stack paired fields. Dialog headings stay visible while scrolling, and onboarding headings receive initial focus without opening the keyboard.
 
+## Recurring expenses and settlement undo
+
+Settings → Recurring expenses holds regular bills such as rent, power and internet. Each one is added to every new sheet, dated on the sheet's start day; the new-sheet form has a checkbox to skip them. "Add missing to …" adds any that are not yet on the current sheet. Added expenses are ordinary expenses that can be edited or deleted. Recurring entries follow the same privacy and author/payer rules as expenses.
+
+Settlement history has an Undo button. Undoing a settlement removes the record and unlocks its expenses so they count toward the balance again. Settlements on archived sheets can be undone after reopening the sheet.
+
 ## GitHub publishing
 
 Source repository: https://github.com/sagaradhikari7777-byte/together.
@@ -52,7 +58,7 @@ Use Node.js 22. There are no runtime dependencies. Run `npm test` and `npm run b
 - The invitation allows its holder to claim an unclaimed member slot; it is not identity verification. Share only within the household. Replacing an invitation invalidates the old invitation, not already-issued member access.
 - Server responses exclude the other couple’s private expenses and receipts. Private expenses must be paid by a member of the current couple. Only the author or payer can edit/delete an eligible expense.
 - Couple-private entries are excluded from settlement. Shared entries allocate either 50/50 or 100% to one couple. For odd-cent equal splits, couple two receives the extra cent; every cent is accounted for.
-- Recording settlement marks the selected sheet’s unsettled shared expenses as settled and locks them. It does not initiate a bank transfer. There is no settlement reversal interface.
+- Recording settlement marks the selected sheet’s unsettled shared expenses as settled and locks them. It does not initiate a bank transfer. A settlement recorded by mistake can be undone from the settlement history.
 - Writes use an atomic compare-and-set operation to prevent silent overwrites. When another member saves first, the app refreshes and asks the current member to review and save again.
 - The app refreshes visible household data every 30 seconds and when returning to the foreground. An open form is protected from background replacement. It requires connectivity and does not promise offline or iOS background sync.
 - CSV export contains only the current member’s visible records and excludes receipt images. Formula-leading text is escaped.
